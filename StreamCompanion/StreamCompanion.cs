@@ -92,7 +92,7 @@ namespace StreamCompanion
             orig(self);
 
             // If inventory changed matches the local players inventort
-            if (PlayerCharacterMasterController.instances.Count > 0 && self.Equals(PlayerCharacterMasterController.instances[0].master.inventory))
+            if (PlayerCharacterMasterController.instances.Count > 0 && self.Equals(PlayerCharacterMasterController.instances[0].master.inventory) && !GameOverController.instance)
             {
                 var items = self.itemAcquisitionOrder;
 

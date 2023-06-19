@@ -1,10 +1,10 @@
 ﻿{
-	"name": "RoR2 Stream Companion",
+	"name": "RoR2StreamCompanion",
 	"version_number": "1.0.0",
-	"website_url": "",
-	"description": "My first Mod",
+	"website_url": "https://github.com/TaranDev/RoR2CompanionMod",
+	"description": "Mod component for the RoR2 Stream Companion Twitch extension.",
 	"dependencies": [
-		"bbepis-BepInExPack-5.4.2108",
-		"RiskofThunder-HookGenPatcher-1.2.3",
+		"bbepis-BepInExPack-5.4.2113",
+		"RiskofThunder-HookGenPatcher-1.2.3"
 	]
 }
