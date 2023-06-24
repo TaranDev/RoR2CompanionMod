@@ -1,17 +1,10 @@
 using BepInEx;
 using BepInEx.Configuration;
-using Facepunch.Steamworks;
-using MonoMod.RuntimeDetour;
 using RoR2;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using UnityEngine.UIElements.Experimental;
-using static RoR2.GivePickupsOnStart;
 using Inventory = RoR2.Inventory;
 
 namespace StreamCompanion
@@ -41,7 +34,6 @@ namespace StreamCompanion
 
         public void Awake()
         {
-            Log.Init(Logger);
             TwitchNameConfigEntry = Config.Bind<string>(
             "RoR2 Stream Companion",
             "Twitch Name",
@@ -199,7 +191,6 @@ namespace StreamCompanion
                 inventoryItemsString = "";
                 equipmentString = "";
                 SendItemsUpdate(inventoryItemsString, equipmentString);
-                Log.Info($"Player items {inventoryItemsString}");
             }
 
         }
