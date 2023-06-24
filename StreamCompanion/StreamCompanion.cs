@@ -26,12 +26,11 @@ namespace StreamCompanion
         public const string PluginVersion = "1.0.0";
 
         // Backend
-        static readonly HttpClient client = new HttpClient();
-        public const string url = "https://ror2-sc-api.herokuapp.com/streamers";
+        public const string url = "https://ror2-sc-api.herokuapp.com/";
 
         static string inventoryItemsString = "";
         static string equipmentString = "";
-        
+
         // Config file entries
         public static ConfigEntry<string> TwitchNameConfigEntry { get; set; }
         public static ConfigEntry<string> SecretKeyConfigEntry { get; set; }
@@ -91,7 +90,7 @@ namespace StreamCompanion
         {
             orig(self);
 
-            // If inventory changed matches the local players inventort
+            // If inventory changed matches the local players inventory, and game is not over
             if (PlayerCharacterMasterController.instances.Count > 0 && self.Equals(PlayerCharacterMasterController.instances[0].master.inventory) && !GameOverController.instance)
             {
                 var items = self.itemAcquisitionOrder;
@@ -102,7 +101,8 @@ namespace StreamCompanion
                 for (int i = 0; i < items.Count; i++)
                 {
                     var itemInfo = ItemCatalog.GetItemDef(items[i]);
-                    if (!itemInfo.hidden) {
+                    if (!itemInfo.hidden)
+                    {
                         if (VanillaItems.Contains(itemInfo.nameToken) && Language.currentLanguage == Language.english)
                         {
                             // Vanilla English Item Case
@@ -112,8 +112,8 @@ namespace StreamCompanion
                             // Modded or Non-English Item Case
                             newInventoryItemsString += Language.GetString(itemInfo.nameToken) + "{" + Language.GetString(itemInfo.descriptionToken) + "}" + "[" + itemInfo.tier + "];";
                         }
-                        
-                    } 
+
+                    }
                 }
 
                 // Removing new line characters
@@ -123,14 +123,15 @@ namespace StreamCompanion
                 var equipment = self.currentEquipmentIndex;
                 var equipmentInfo = EquipmentCatalog.GetEquipmentDef(equipment);
                 var newEquipmentString = "";
-                if (equipmentInfo) {
+                if (equipmentInfo)
+                {
                     // Equipment in current active slot
                     var equipmentDescription = Language.GetString(equipmentInfo.descriptionToken);
-                    if(equipmentDescription == "")
+                    if (equipmentDescription == "")
                     {
                         equipmentDescription = Language.GetString(equipmentInfo.pickupToken);
                     }
-                    newEquipmentString = Language.GetString(equipmentInfo.nameToken) + "{" + equipmentDescription + "}" +  "[" + equipmentInfo.isLunar + "];";
+                    newEquipmentString = Language.GetString(equipmentInfo.nameToken) + "{" + equipmentDescription + "}" + "[" + equipmentInfo.isLunar + "];";
 
                     var equipmentAlt = self.alternateEquipmentIndex;
                     var equipmentInfoAlt = EquipmentCatalog.GetEquipmentDef(equipmentAlt);
@@ -155,7 +156,8 @@ namespace StreamCompanion
 
 
                 // If the changed inventory items are different to the previous inventory (gained or lost a unique item)
-                if (!newInventoryItemsString.Equals(inventoryItemsString) || !newEquipmentString.Equals(equipmentString)) {
+                if (!newInventoryItemsString.Equals(inventoryItemsString) || !newEquipmentString.Equals(equipmentString))
+                {
                     inventoryItemsString = newInventoryItemsString;
                     equipmentString = newEquipmentString;
                     WaitThenSendItemsUpdate(inventoryItemsString, equipmentString);
@@ -165,21 +167,22 @@ namespace StreamCompanion
 
         private static void WaitThenSendItemsUpdate(string items, string equipment)
         {
-            Task.Delay((int) (DelayConfigEntry.Value*1000)).ContinueWith(t => SendItemsUpdate(items, equipment));
+            Task.Delay((int)(DelayConfigEntry.Value * 1000)).ContinueWith(t => SendItemsUpdate(items, equipment));
         }
 
         private static async void SendItemsUpdate(string items, string equipment)
         {
             await Task.Run(() =>
             {
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create(url + "/" + TwitchNameConfigEntry.Value);
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
                 httpWebRequest.ContentType = "application/json";
                 httpWebRequest.Method = "POST";
 
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
-                    string json = "{\"secretKey\":\"" + SecretKeyConfigEntry.Value + "\"," +
-                                  "\"items\":\"" + items + "\"," +
+                    string json = "{\"twitchName\":\"" + TwitchNameConfigEntry.Value + "\"," +
+                                    "\"secretKey\":\"" + SecretKeyConfigEntry.Value + "\"," +
+                                    "\"items\":\"" + items + "\"," +
                                     "\"equipment\":\"" + equipment + "\"}";
                     streamWriter.Write(json);
                 }
@@ -191,7 +194,8 @@ namespace StreamCompanion
         private void Update()
         {
             // If a run is quit, update items to nothing
-            if(RoR2.Run.instance == null && inventoryItemsString.Length > 0) {
+            if (RoR2.Run.instance == null && inventoryItemsString.Length > 0)
+            {
                 inventoryItemsString = "";
                 equipmentString = "";
                 SendItemsUpdate(inventoryItemsString, equipmentString);
