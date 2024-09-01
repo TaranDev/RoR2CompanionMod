@@ -354,9 +354,9 @@ namespace StreamCompanion
             return newBodyColourString;
         }
 
-            private static void WaitThenSendItemsUpdate(string items, string equipment, string skills, string bodycolour)
+            private static async void WaitThenSendItemsUpdate(string items, string equipment, string skills, string bodycolour)
         {
-            Task.Delay((int)(DelayConfigEntry.Value * 1000)).ContinueWith(t => {
+            await Task.Delay((int)(DelayConfigEntry.Value * 1000)).ContinueWith(t => {
                 SendItemsUpdate(items, equipment, skills, bodycolour);
             });
         }
@@ -391,8 +391,9 @@ namespace StreamCompanion
                                     "\"hudstatus\":\"" + hudstatus + "\"}";
                     streamWriter.Write(json);
                 }
-
+                
                 var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                httpResponse.Close();
             });
         }
 
